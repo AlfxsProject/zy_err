@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #pragma once
-#include "zyalloc/library.h"
+#include "zyalloc/zyalloc.h"
 #include <stdint.h>
 
 /*
