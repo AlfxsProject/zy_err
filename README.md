@@ -6,7 +6,7 @@ Error Dequeue Abstraction Library
 
 ## LIBRARY
 
-zyerr (-lzyerr -lzyalloc)
+zyerr (-lzyerr)
 
 ## SYNOPSIS
 
