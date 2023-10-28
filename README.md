@@ -36,7 +36,7 @@ int64_t zyerrbx_code(const zyerrbx_t *bx);
 const char *zyerrbx_file(const zyerrbx_t *bx);
 size_t zyerrbx_line(const zyerrbx_t *bx);
 const char *zyerrbx_function(const zyerrbx_t *bx);
-const void *zyerbx_opaque(const zyerrbx_t *bx, size_t *size);
+const void *zyerrbx_opaque(const zyerrbx_t *bx, size_t *size);
 ```
 
 ## DESCRIPTION

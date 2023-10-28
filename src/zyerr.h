@@ -56,7 +56,7 @@ extern "C"
     const char *zyerrbx_file(const zyerrbx_t *bx) __attribute__((nonnull));
     size_t zyerrbx_line(const zyerrbx_t *bx) __attribute__((nonnull));
     const char *zyerrbx_function(const zyerrbx_t *bx) __attribute__((nonnull));
-    const void *zyerbx_opaque(const zyerrbx_t *bx, size_t *size) __attribute__((nonnull(1)));
+    const void *zyerrbx_opaque(const zyerrbx_t *bx, size_t *size) __attribute__((nonnull(1)));
 
 #ifdef __cplusplus
 }

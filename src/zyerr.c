@@ -238,7 +238,7 @@ const char *zyerrbx_function(const zyerrbx_t *bx)
     return bx->function;
 }
 
-const void *zyerbx_opaque(const zyerrbx_t *bx, size_t *size)
+const void *zyerrbx_opaque(const zyerrbx_t *bx, size_t *size)
 {
     if (size != NULL)
     {
