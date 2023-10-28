@@ -75,11 +75,29 @@ void zyerr_clear(zyerr_t *err)
 int zyerr_push_first(zyerr_t *err, int64_t code, const char *file, size_t line, const char *function,
                      const void *opaque, size_t opaque_size)
 {
+    void *data;
+    int r = zymalloc(err->alloc, sizeof(opaque_t) + sizeof(zyerrbx_t) + opaque_size, &data);
+    const opaque_t opaque_init = {.size = sizeof(zyerrbx_t) + opaque_size};
+    const zyerrbx_t bx_init = {.code = code, .line = line, .file = file, .function = function, {.size = opaque_size}};
+    memcpy(data, (const void *)&opaque_init, sizeof(opaque_t));
+    memcpy(data + sizeof(opaque_t), (const void *)&bx_init, sizeof(zyerrbx_t));
+    memcpy(data + sizeof(opaque_t) + sizeof(zyerrbx_t), (const void*)opaque, opaque_size);
+    dequeue_push_first(err->dequeue, (const opaque_t *)data);
+    zyfree(err->alloc, data);
 }
 
 int zyerr_push_last(zyerr_t *err, int64_t code, const char *file, size_t line, const char *function, const void *opaque,
                     size_t opaque_size)
 {
+    void *data;
+    int r = zymalloc(err->alloc, sizeof(opaque_t) + sizeof(zyerrbx_t) + opaque_size, &data);
+    const opaque_t opaque_init = {.size = sizeof(zyerrbx_t) + opaque_size};
+    const zyerrbx_t bx_init = {.code = code, .line = line, .file = file, .function = function, {.size = opaque_size}};
+    memcpy(data, (const void *)&opaque_init, sizeof(opaque_t));
+    memcpy(data + sizeof(opaque_t), (const void *)&bx_init, sizeof(zyerrbx_t));
+    memcpy(data + sizeof(opaque_t) + sizeof(zyerrbx_t), (const void*)opaque, opaque_size);
+    dequeue_push_last(err->dequeue, (const opaque_t *)data);
+    zyfree(err->alloc, data);
 }
 
 void zyerr_discard_first(zyerr_t *err)
@@ -94,12 +112,12 @@ void zyerr_discard_last(zyerr_t *err)
 
 zyerrbx_t *zyerr_peek_first(const zyerr_t *err)
 {
-    return (zyerrbx_t *)dequeue_peek_first(err->dequeue);
+    return (zyerrbx_t *)(&((opaque_t*)dequeue_peek_first(err->dequeue))->data);
 }
 
 zyerrbx_t *zyerr_peek_last(const zyerr_t *err)
 {
-    return (zyerrbx_t *)dequeue_peek_last(err->dequeue);
+    return (zyerrbx_t *)(&((opaque_t*)dequeue_peek_last(err->dequeue))->data);
 }
 
 size_t zyerr_size(const zyerr_t *err)
