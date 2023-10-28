@@ -83,7 +83,8 @@ int zyerr_push_first(zyerr_t *err, int64_t code, const char *file, size_t line, 
     memcpy(data + sizeof(opaque_t), (const void *)&bx_init, sizeof(zyerrbx_t));
     memcpy(data + sizeof(opaque_t) + sizeof(zyerrbx_t), (const void*)opaque, opaque_size);
     dequeue_push_first(err->dequeue, (const opaque_t *)data);
-    zyfree(err->alloc, data);
+    zyfree(err->alloc, &data);
+    return r;
 }
 
 int zyerr_push_last(zyerr_t *err, int64_t code, const char *file, size_t line, const char *function, const void *opaque,
@@ -97,7 +98,8 @@ int zyerr_push_last(zyerr_t *err, int64_t code, const char *file, size_t line, c
     memcpy(data + sizeof(opaque_t), (const void *)&bx_init, sizeof(zyerrbx_t));
     memcpy(data + sizeof(opaque_t) + sizeof(zyerrbx_t), (const void*)opaque, opaque_size);
     dequeue_push_last(err->dequeue, (const opaque_t *)data);
-    zyfree(err->alloc, data);
+    zyfree(err->alloc, &data);
+    return r;
 }
 
 void zyerr_discard_first(zyerr_t *err)
