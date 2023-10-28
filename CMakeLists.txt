@@ -3,5 +3,7 @@ project(zyerr C)
 
 set(CMAKE_C_STANDARD 23)
 
+include_directories(zyalloc/src)
+
 add_library(zyerr src/zyerr.c
-        zyalloc/zyalloc.c)
+        zyalloc/src/zyalloc.c)
