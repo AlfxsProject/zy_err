@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 #pragma once
-#include "zyalloc.h"
 #include <stdint.h>
+#include <zyalloc.h>
 
 /*
  * Types
@@ -39,19 +39,19 @@ extern "C"
 {
 #endif
 
-    int zyerr_construct(zyerr_t **dqe, const zyalloc_t *alloc) __attribute__((nonnull));
-    void zyerr_destruct(zyerr_t **dqe) __attribute__((nonnull));
-    void zyerr_clear(zyerr_t *dqe) __attribute__((nonnull));
-    int zyerr_push_first(zyerr_t *dqe, int64_t code, const char *file, size_t line, const char *function,
+    int zyerr_construct(zyerr_t **err, const zyalloc_t *alloc) __attribute__((nonnull));
+    void zyerr_destruct(zyerr_t **err) __attribute__((nonnull));
+    void zyerr_clear(zyerr_t *err) __attribute__((nonnull));
+    int zyerr_push_first(zyerr_t *err, int64_t code, const char *file, size_t line, const char *function,
                          const void *opaque, size_t opaque_size) __attribute__((nonnull(1, 3, 5)));
-    int zyerr_push_last(zyerr_t *dqe, int64_t code, const char *file, size_t line, const char *function,
+    int zyerr_push_last(zyerr_t *err, int64_t code, const char *file, size_t line, const char *function,
                         const void *opaque, size_t opaque_size) __attribute__((nonnull(1, 3, 5)));
-    void zyerr_discard_first(zyerr_t *dqe) __attribute__((nonnull));
-    void zyerr_discard_last(zyerr_t *dqe) __attribute__((nonnull));
-    zyerrbx_t *zyerr_peek_first(const zyerr_t *dqe) __attribute__((nonnull));
-    zyerrbx_t *zyerr_peek_last(const zyerr_t *dqe) __attribute__((nonnull));
-    size_t zyerr_size(const zyerr_t *dqe) __attribute__((nonnull));
-    bool zyerr_is_empty(const zyerr_t *dqe) __attribute__((nonnull));
+    void zyerr_discard_first(zyerr_t *err) __attribute__((nonnull));
+    void zyerr_discard_last(zyerr_t *err) __attribute__((nonnull));
+    zyerrbx_t *zyerr_peek_first(const zyerr_t *err) __attribute__((nonnull));
+    zyerrbx_t *zyerr_peek_last(const zyerr_t *err) __attribute__((nonnull));
+    size_t zyerr_size(const zyerr_t *err) __attribute__((nonnull));
+    bool zyerr_is_empty(const zyerr_t *err) __attribute__((nonnull));
     int64_t zyerrbx_code(const zyerrbx_t *bx) __attribute__((nonnull));
     const char *zyerrbx_file(const zyerrbx_t *bx) __attribute__((nonnull));
     size_t zyerrbx_line(const zyerrbx_t *bx) __attribute__((nonnull));
