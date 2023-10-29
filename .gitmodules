@@ -1,6 +1,6 @@
 [submodule "zy_dequeue"]
 	path = zy_dequeue
-	url = git@github.com:AlfxsProject/zy_dequeue.git
+	url = https://github.com/AlfxsProject/zy_dequeue.git
 [submodule "zy_alloc"]
 	path = zy_alloc
-	url = git@github.com:AlfxsProject/zy_alloc.git
+	url = https://github.com/AlfxsProject/zy_alloc.git
