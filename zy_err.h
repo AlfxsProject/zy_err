@@ -25,12 +25,6 @@ typedef struct zy_err_bx_s zy_err_bx_t;
 typedef struct zy_err_s zy_err_t;
 
 /*
- * Constants
- */
-
-#define ZY_OK (0)
-
-/*
  * Functions
  */
 
