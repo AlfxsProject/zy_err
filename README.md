@@ -1,4 +1,4 @@
-# zyerr
+# zy_err
 
 ## NAME
 
@@ -6,126 +6,134 @@ Error Dequeue Abstraction Library
 
 ## LIBRARY
 
-zyerr (-lzyerr)
+zy_err (-lzy_err)
 
 ## SYNOPSIS
 
 ```C
-#include <zyerr.h>
+#include <zy_err.h>
 
-typedef struct zyerrbx_s zyerrbx_t;
-typedef struct zyerr_s zyerr_t;
+typedef struct zy_err_bx_s zy_err_bx_t;
+typedef struct zy_err_s zy_err_t;
 
-int zyerr_construct(zyerr_t **err, const zyalloc_t *alloc);
-void zyerr_destruct(zyerr_t **err);
-void zyerr_clear(zyerr_t *err);
-int zyerr_push_first(zyerr_t *err, int64_t code, const char *file,
+int zy_err_construct(zy_err_t **err, const zyalloc_t *alloc);
+void zy_err_destruct(zy_err_t **err);
+void zy_err_clear(zy_err_t *err);
+int zy_err_push_first(zy_err_t *err, int64_t code, const char *file,
                      size_t line, const char *function,
                      const void *opaque, size_t opaque_size);
-int zyerr_push_last(zyerr_t *err, int64_t code, const char *file,
+int zy_err_push_last(zy_err_t *err, int64_t code, const char *file,
                     size_t line, const char *function,
                     const void *opaque, size_t opaque_size);
-void zyerr_discard_first(zyerr_t *err);
-void zyerr_discard_last(zyerr_t *err);
-zyerrbx_t *zyerr_peek_first(const zyerr_t *err);
-zyerrbx_t *zyerr_peek_last(const zyerr_t *err);
-size_t zyerr_size(const zyerr_t *err);
-bool zyerr_is_empty(const zyerr_t *err);
+void zy_err_discard_first(zy_err_t *err);
+void zy_err_discard_last(zy_err_t *err);
+zy_err_bx_t *zy_err_peek_first(const zy_err_t *err);
+zy_err_bx_t *zy_err_peek_last(const zy_err_t *err);
+size_t zy_err_size(const zy_err_t *err);
+bool zy_err_is_empty(const zy_err_t *err);
 
-int64_t zyerrbx_code(const zyerrbx_t *bx);
-const char *zyerrbx_file(const zyerrbx_t *bx);
-size_t zyerrbx_line(const zyerrbx_t *bx);
-const char *zyerrbx_function(const zyerrbx_t *bx);
-const void *zyerrbx_opaque(const zyerrbx_t *bx, size_t *size);
+int64_t zy_err_bx_code(const zy_err_bx_t *bx);
+const char *zy_err_bx_file(const zy_err_bx_t *bx);
+size_t zy_err_bx_line(const zy_err_bx_t *bx);
+const char *zy_err_bx_function(const zy_err_bx_t *bx);
+const void *zy_err_bx_opaque(const zy_err_bx_t *bx, size_t *size);
 ```
 
 ## DESCRIPTION
 
-### zyerr_construct()
+### zy_err_construct()
 
-`zyerr_construct` allocates a `zyerr_t` data structure using `alloc` and stores the result in `*err`. All function
+`zy_err_construct` allocates a `zy_err_t` data structure using `alloc` and stores the result in `*err`. All function
 arguments must be non-null.
 
-### zyerr_destruct()
+### zy_err_destruct()
 
-`zyerr_destruct` deallocates a `zyerr_t` data structure and sets `*err` to `nullptr`. Note that `err` must be non-null.
+`zy_err_destruct` deallocates a `zy_err_t` data structure and sets `*err` to `nullptr`. Note that `err` must be
+non-null.
 
-### zyerr_clear()
+### zy_err_clear()
 
-`zyerr_clear` deallocates and unlinks all `zyerrbx_t` data structures stored in `err`. Note that `err` must be non-null.
+`zy_err_clear` deallocates and unlinks all `zy_err_bx_t` data structures stored in `err`. Note that `err` must be
+non-null.
 
-### zyerr_push_\*()
+### zy_err_push_\*()
 
-`zyerr_push_first` and `zyerr_push_last` allocate a `zyerrbx_t` and store `code`, `file`, `line`, `function`,`opaque`,
+`zy_err_push_first` and `zy_err_push_last` allocate a `zy_err_bx_t` and
+store `code`, `file`, `line`, `function`,`opaque`,
 and `opaque_size`.
 
-The resulting data structure is stored at the *front* and *back* of `err` for `zyerr_push_first` and `zyerr_push_last`,
+The resulting data structure is stored at the *front* and *back* of `err` for `zy_err_push_first`
+and `zy_err_push_last`,
 respectively.
 
 Note that `err`, `file`, and `function` must be non-null and `line` must be non-zero. `opaque` may be set to `nullptr`
-and `opaque_size` to zero in order to indicate that there is no auxilliary data; however, if `opaque` is non-null,
+and `opaque_size` to zero in order to indicate that there is no auxiliary data; however, if `opaque` is non-null,
 then `opaque_size` must be non-zero.
 
-### zyerr_discard_first()
+### zy_err_discard_first()
 
-`zyerr_discard_first` deallocates and unlinks the *front-most* `zyerrbx_t` data structure from `err`. Note that `err`
+`zy_err_discard_first` deallocates and unlinks the *front-most* `zy_err_bx_t` data structure from `err`. Note that `err`
 must be non-null.
 
-### zyerr_discard_last()
+### zy_err_discard_last()
 
-`zyerr_discard_last` deallocates and unlinks the *back-most* `zyerrbx_t` data structure from `err`. Note that `err` must
+`zy_err_discard_last` deallocates and unlinks the *back-most* `zy_err_bx_t` data structure from `err`. Note that `err`
+must
 be non-null.
 
-### zyerr_peek_first()
+### zy_err_peek_first()
 
-`zyerr_peek_first` retrieves the *front-most* `zyerrbx_t` data structure from `err` if it exists. All function arguments
+`zy_err_peek_first` retrieves the *front-most* `zy_err_bx_t` data structure from `err` if it exists. All function
+arguments
 must be non-null.
 
-### zyerr_peek_last()
+### zy_err_peek_last()
 
-`zyerr_peek_last` retrieves the *back-most* `zyerrbx_t` data structure from `err` if it exists. All function arguments
+`zy_err_peek_last` retrieves the *back-most* `zy_err_bx_t` data structure from `err` if it exists. All function
+arguments
 must be non-null.
 
-### zyerr_size()
+### zy_err_size()
 
-`zyerr_size` returns the number of elements stored in `err`. Note that `err` must be non-null.
+`zy_err_size` returns the number of elements stored in `err`. Note that `err` must be non-null.
 
-### zyerr_is_empty()
+### zy_err_is_empty()
 
-`zyerr_is_empty` returns a `true` if and only if there are no elements stored in `err`. Note that `err` must be
+`zy_err_is_empty` returns a `true` if and only if there are no elements stored in `err`. Note that `err` must be
 non-null.
 
-### zyerrbx_code()
+### zy_err_bx_code()
 
-`zyerrbx_code` returns the *error code* associated with `bx`. Note that `bx` must be non-null.
+`zy_err_bx_code` returns the *error code* associated with `bx`. Note that `bx` must be non-null.
 
-### zyerrbx_file()
+### zy_err_bx_file()
 
-`zyerrbx_file` returns the *file* associated with `bx`. Note that `bx` must be non-null.
+`zy_err_bx_file` returns the *file* associated with `bx`. Note that `bx` must be non-null.
 
-### zyerrbx_line()
+### zy_err_bx_line()
 
-`zyerrbx_line` returns the *line number* associated with `bx`. Note that `bx` must be non-null.
+`zy_err_bx_line` returns the *line number* associated with `bx`. Note that `bx` must be non-null.
 
-### zyerrbx_function()
+### zy_err_bx_function()
 
-`zyerrbx_function` returns the *function name* associated with `bx`. Note that `bx` must be non-null.
+`zy_err_bx_function` returns the *function name* associated with `bx`. Note that `bx` must be non-null.
 
-### zyerrbx_opaque()
+### zy_err_bx_opaque()
 
-`zyerrbx_opaque` returns the memory address of the opaque data associated with `bx` and stores its size in `*size`. Note
+`zy_err_bx_opaque` returns the memory address of the opaque data associated with `bx` and stores its size in `*size`.
+Note
 that `bx` must be non-null. `size` may be `nullptr` to indicate that the size is known ahead of time and is unneeded.
 
 ## RETURN VALUE
 
-On success, `zyerr_construct`, `zyerr_push_first`, `zyerr_push_last` return `0`. Otherwise, an error code is
+On success, `zy_err_construct`, `zy_err_push_first`, `zy_err_push_last` return `0`. Otherwise, an error code is
 returned.
 
 ## ERRORS
 
-`zyerr_construct`, `zyerr_push_first`, and `zyerr_push_last` can fail with the following error.
+`zy_err_construct`, `zy_err_push_first`, and `zy_err_push_last` can fail with the following error.
 
-**ZYALLOC_ENOMEM** Out of memory.
+**ZY_ENOMEM** Out of memory.
 
 ## NOTES
 
