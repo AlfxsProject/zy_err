@@ -52,3 +52,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+## User Changes
+# Don't Include Jetbrains
+.idea
+cmake-build-debug
