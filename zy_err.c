@@ -15,6 +15,7 @@
  */
 #include "zy_err.h"
 #include "zy_dequeue.h"
+#include <stddef.h>
 #include <string.h>
 
 /*
@@ -23,27 +24,18 @@
 
 struct zy_err_s
 {
-    const zy_alloc_t *const alloc;
+    const zy_alloc_t *alloc;
     zy_dequeue_t *dequeue;
 };
 
 struct zy_err_bx_s
 {
-    const int64_t code;
-    const size_t line;
-    const char *const file;
-    const char *const function;
-    const zy_opaque_t opaque;
+    int64_t code;
+    size_t line;
+    const char *file;
+    const char *function;
+    zy_opaque_t opaque;
 };
-
-typedef struct opaque_wrapper_s
-{
-    size_t size;
-    struct
-    {
-        zy_err_bx_t bx;
-    } data;
-} opaque_wrapper_t;
 
 /*
  * Functions
@@ -59,10 +51,13 @@ int zy_err_construct(zy_err_t **err, const zy_alloc_t *alloc)
         r = zy_dequeue_construct(&dequeue, alloc);
         if (r == ZY_OK)
         {
-            const zy_err_t dqe_init = {.alloc = alloc, .dequeue = dequeue};
-            memcpy((void *)*err, (const void *)&dqe_init, sizeof(zy_err_t));
+            (*err)->alloc = alloc;
+            (*err)->dequeue = dequeue;
         }
-        return ZY_OK;
+        else
+        {
+            zy_free(alloc, (void **)err);
+        }
     }
     return r;
 }
@@ -85,12 +80,16 @@ int zy_err_push_first(zy_err_t *err, int64_t code, const char *file, size_t line
                       const void *opaque, size_t opaque_size)
 {
     void *data;
-    int r = zy_malloc(err->alloc, sizeof(opaque_wrapper_t) + opaque_size, &data);
-    const opaque_wrapper_t opaque_init = {
-        .size = sizeof(zy_err_bx_t) + opaque_size,
-        {{.code = code, .line = line, .file = file, .function = function, {.size = opaque_size}}}};
-    memcpy(data, (const void *)&opaque_init, sizeof(opaque_wrapper_t));
-    memcpy(data + sizeof(opaque_wrapper_t), (const void *)opaque, opaque_size);
+    int r = zy_malloc(err->alloc, sizeof(zy_opaque_t) + sizeof(zy_err_bx_t) + opaque_size, &data);
+    *(size_t *)(data + offsetof(zy_opaque_t, size)) = sizeof(zy_opaque_t) + sizeof(zy_err_bx_t) + opaque_size;
+    *(int64_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, code)) = code;
+    *(size_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, line)) = line;
+    *(const char **)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, file)) = file;
+    *(const char **)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, function)) = function;
+    *(size_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, opaque) + offsetof(zy_opaque_t, size)) =
+        opaque_size;
+    memcpy(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, opaque) + offsetof(zy_opaque_t, data), opaque,
+           opaque_size);
     zy_dequeue_push_first(err->dequeue, (const zy_opaque_t *)data);
     zy_free(err->alloc, &data);
     return r;
@@ -100,12 +99,16 @@ int zy_err_push_last(zy_err_t *err, int64_t code, const char *file, size_t line,
                      const void *opaque, size_t opaque_size)
 {
     void *data;
-    int r = zy_malloc(err->alloc, sizeof(opaque_wrapper_t) + opaque_size, &data);
-    const opaque_wrapper_t opaque_init = {
-        .size = sizeof(zy_err_bx_t) + opaque_size,
-        {{.code = code, .line = line, .file = file, .function = function, {.size = opaque_size}}}};
-    memcpy(data, (const void *)&opaque_init, sizeof(opaque_wrapper_t));
-    memcpy(data + sizeof(opaque_wrapper_t), (const void *)opaque, opaque_size);
+    int r = zy_malloc(err->alloc, sizeof(zy_opaque_t) + sizeof(zy_err_bx_t) + opaque_size, &data);
+    *(size_t *)(data + offsetof(zy_opaque_t, size)) = sizeof(zy_opaque_t) + sizeof(zy_err_bx_t) + opaque_size;
+    *(int64_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, code)) = code;
+    *(size_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, line)) = line;
+    *(const char **)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, file)) = file;
+    *(const char **)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, function)) = function;
+    *(size_t *)(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, opaque) + offsetof(zy_opaque_t, size)) =
+        opaque_size;
+    memcpy(data + offsetof(zy_opaque_t, data) + offsetof(zy_err_bx_t, opaque) + offsetof(zy_opaque_t, data), opaque,
+           opaque_size);
     zy_dequeue_push_last(err->dequeue, (const zy_opaque_t *)data);
     zy_free(err->alloc, &data);
     return r;
